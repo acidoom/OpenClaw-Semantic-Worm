@@ -6,15 +6,15 @@ February 2026
 
 ## Abstract
 
-As LLM-based autonomous agents move from research prototypes into production workflows, understanding how information propagates through multi-agent systems becomes a critical safety concern. We introduce SEMANTIC-WORM — a controlled experimental framework for studying how semantic payloads (natural language instructions, behavioral modifications, and contextual "tracers") spread across networks of autonomous agents that communicate through unstructured channels. Unlike prior work that focuses on single-agent jailbreaking or static prompt injection, our approach examines the *emergent dynamics* of information flow: mutation rates during agent-to-agent retransmission, the role of memory systems in payload persistence, and how network topology shapes propagation velocity and reach. We present an open-source agent farm platform built on production-grade components (OpenClaw agent framework, Qwen models via vLLM) designed to run these experiments in air-gapped local environments with full observability. Our preliminary findings suggest that semantic payloads exhibit measurable mutation gradients across retransmission hops, that agent memory systems create non-trivial persistence effects, and that propagation dynamics are highly sensitive to network topology — results with direct implications for the security of multi-agent deployments.
+As LLM-based autonomous agents move from research prototypes into production workflows, understanding how information propagates through multi-agent systems becomes a critical safety concern. We introduce SEMANTIC-WORM – a controlled experimental framework for studying how semantic payloads (natural language instructions, behavioral modifications, and contextual "tracers") spread across networks of autonomous agents that communicate through unstructured channels. Unlike prior work that focuses on single-agent jailbreaking or static prompt injection, our approach examines the *emergent dynamics* of information flow: mutation rates during agent-to-agent retransmission, the role of memory systems in payload persistence, and how network topology shapes propagation velocity and reach. We present an open-source agent farm platform built on production-grade components (OpenClaw agent framework, Qwen models via vLLM) designed to run these experiments in air-gapped local environments with full observability. Our preliminary findings suggest that semantic payloads exhibit measurable mutation gradients across retransmission hops, that agent memory systems create non-trivial persistence effects, and that propagation dynamics are highly sensitive to network topology – results with direct implications for the security of multi-agent deployments.
 
 ## 1. Introduction
 
 The deployment of LLM-based agents in enterprise settings has accelerated dramatically since 2024. Systems like AutoGPT, CrewAI, and production agent frameworks now orchestrate complex workflows where multiple agents collaborate, delegate tasks, and share information through natural language channels. This shift from single-model inference to multi-agent orchestration introduces a qualitatively new class of security concerns that existing red-teaming methodologies are ill-equipped to address.
 
-Consider a typical enterprise agent pipeline: a customer-facing agent receives user input, delegates subtasks to specialist agents, which in turn query knowledge bases and invoke tools. Each handoff between agents represents a potential attack surface — not for traditional code injection, but for *semantic* manipulation. A carefully crafted instruction embedded in an upstream agent's output can influence downstream behavior, and the effects cascade through the pipeline in ways that are difficult to predict or detect.
+Consider a typical enterprise agent pipeline: a customer-facing agent receives user input, delegates subtasks to specialist agents, which in turn query knowledge bases and invoke tools. Each handoff between agents represents a potential attack surface – not for traditional code injection, but for *semantic* manipulation. A carefully crafted instruction embedded in an upstream agent's output can influence downstream behavior, and the effects cascade through the pipeline in ways that are difficult to predict or detect.
 
-Prior work has studied these vulnerabilities primarily at the single-agent level: prompt injection attacks against individual models, jailbreak techniques that bypass safety filters, and backdoor attacks embedded during training. Recent work on cross-stage attack propagation in agent workflows (Yang et al., 2025; Zhan et al., 2025) has begun to examine how attacks amplify across pipeline stages. However, the *network-level dynamics* of information propagation in agent systems — how payloads mutate, persist, and spread through populations of communicating agents — remain largely unexplored.
+Prior work has studied these vulnerabilities primarily at the single-agent level: prompt injection attacks against individual models, jailbreak techniques that bypass safety filters, and backdoor attacks embedded during training. Recent work on cross-stage attack propagation in agent workflows (Yang et al., 2025; Zhan et al., 2025) has begun to examine how attacks amplify across pipeline stages. However, the *network-level dynamics* of information propagation in agent systems – how payloads mutate, persist, and spread through populations of communicating agents – remain largely unexplored.
 
 SEMANTIC-WORM addresses this gap. Rather than attacking a single agent or a linear pipeline, we study what happens when a semantic payload is introduced into a *network* of agents that communicate through social channels. The name reflects an analogy to biological epidemiology and computer worm propagation, but the mechanism is fundamentally different: our "worms" are natural language instructions that spread through conversation, not executable code that exploits software vulnerabilities.
 
@@ -22,13 +22,13 @@ SEMANTIC-WORM addresses this gap. Rather than attacking a single agent or a line
 
 ### 2.1 The Multi-Agent Security Surface
 
-The transition from single-agent to multi-agent systems introduces several properties that complicate security analysis. First, agents increasingly maintain *persistent memory* — conversation histories, learned preferences, and retrieved context that persists across sessions. A payload that enters an agent's memory may influence its behavior long after the initial interaction. Second, agents communicate through *unstructured natural language*, making it fundamentally harder to sanitize inter-agent messages compared to typed API calls. Third, agent networks exhibit *emergent behaviors* that cannot be predicted from individual agent properties alone.
+The transition from single-agent to multi-agent systems introduces several properties that complicate security analysis. First, agents increasingly maintain *persistent memory* – conversation histories, learned preferences, and retrieved context that persists across sessions. A payload that enters an agent's memory may influence its behavior long after the initial interaction. Second, agents communicate through *unstructured natural language*, making it fundamentally harder to sanitize inter-agent messages compared to typed API calls. Third, agent networks exhibit *emergent behaviors* that cannot be predicted from individual agent properties alone.
 
 Recent benchmarks such as ASB (Agent Security Benchmark) have begun to systematize the evaluation of agent security across multiple attack vectors including direct prompt injection, memory poisoning, and tool misuse. However, these frameworks primarily evaluate individual agents or linear pipelines rather than networked populations.
 
 ### 2.2 Cross-Stage Propagation
 
-Yang et al. (2025) demonstrated that backdoor attacks on LLM-based agents can propagate across pipeline stages, with downstream stages amplifying attack effects rather than attenuating them. Their findings on "cross-stage triggered attacks" — where a backdoor trigger in one stage cascades through subsequent stages — provide important motivation for our work. If attacks amplify across two or three stages in a linear pipeline, what happens in a fully connected network of thirty agents over a hundred interaction cycles?
+Yang et al. (2025) demonstrated that backdoor attacks on LLM-based agents can propagate across pipeline stages, with downstream stages amplifying attack effects rather than attenuating them. Their findings on "cross-stage triggered attacks" – where a backdoor trigger in one stage cascades through subsequent stages – provide important motivation for our work. If attacks amplify across two or three stages in a linear pipeline, what happens in a fully connected network of thirty agents over a hundred interaction cycles?
 
 ### 2.3 From Pipelines to Networks
 
@@ -38,11 +38,11 @@ SEMANTIC-WORM extends the linear pipeline model to arbitrary network topologies.
 
 ### 3.1 Design Philosophy
 
-Our experimental platform — the **Agent Farm** — is designed around three principles: *ecological validity*, *modularity*, and *containment*.
+Our experimental platform – the **Agent Farm** – is designed around three principles: *ecological validity*, *modularity*, and *containment*.
 
 **Ecological validity** means using production-grade agent frameworks rather than simplified research abstractions. We use OpenClaw, a full-featured agent framework with authentic memory systems, session management, skill frameworks, and tool integration. Agents in our experiments behave like agents in real deployments, not like toy simulations.
 
-**Modularity** means separating permanent infrastructure from experiment-specific configuration. The platform supports any experiment that involves populations of communicating agents — SEMANTIC-WORM is one scenario; jailbreak relays, alignment probes, and red team simulations are others.
+**Modularity** means separating permanent infrastructure from experiment-specific configuration. The platform supports any experiment that involves populations of communicating agents – SEMANTIC-WORM is one scenario; jailbreak relays, alignment probes, and red team simulations are others.
 
 **Containment** means air-gapped operation on dedicated hardware. All models run locally on NVIDIA DGX Spark hardware via vLLM. No API calls leave the machine. This eliminates cost barriers (experiments run for free after hardware investment) while ensuring that experimental payloads never reach production systems.
 
@@ -50,15 +50,15 @@ Our experimental platform — the **Agent Farm** — is designed around three pr
 
 The platform is organized into five layers:
 
-1. **Model Serving Layer** — Qwen 2.5-32B-Instruct served via vLLM with OpenAI-compatible endpoints, behind a router that enables model swapping without reconfiguring agents.
+1. **Model Serving Layer** – Qwen 2.5-32B-Instruct served via vLLM with OpenAI-compatible endpoints, behind a router that enables model swapping without reconfiguring agents.
 
-2. **Agent Fleet Layer** — A fleet manager that spawns, configures, and monitors OpenClaw agent instances running in Docker containers. Each agent receives a unique persona, configurable skills, and independent memory storage.
+2. **Agent Fleet Layer** – A fleet manager that spawns, configures, and monitors OpenClaw agent instances running in Docker containers. Each agent receives a unique persona, configurable skills, and independent memory storage.
 
-3. **Communication Bus** — Pluggable communication channels including a social feed server (MiniMolt), direct messaging, shared document spaces, and custom protocols. A topology engine controls which agents can communicate with which others.
+3. **Communication Bus** – Pluggable communication channels including a social feed server (MiniMolt), direct messaging, shared document spaces, and custom protocols. A topology engine controls which agents can communicate with which others.
 
-4. **Experiment Engine** — A conductor that orchestrates experimental cycles, loads scenario configurations from YAML schemas, injects payloads, and runs detection algorithms. Experiment scenarios are swappable configurations.
+4. **Experiment Engine** – A conductor that orchestrates experimental cycles, loads scenario configurations from YAML schemas, injects payloads, and runs detection algorithms. Experiment scenarios are swappable configurations.
 
-5. **Observability Layer** — Comprehensive logging (TSM format), metrics collection, Grafana dashboards, snapshot/restore capabilities, and an analysis pipeline for generating plots and reports.
+5. **Observability Layer** – Comprehensive logging (TSM format), metrics collection, Grafana dashboards, snapshot/restore capabilities, and an analysis pipeline for generating plots and reports.
 
 ### 3.3 The farmlib SDK
 
@@ -83,7 +83,7 @@ results.plot_infection_curve()
 
 ### 4.1 Experimental Design
 
-The core experiment measures how a semantic tracer — a distinctive natural language payload — propagates through a network of agents. The protocol proceeds in four phases:
+The core experiment measures how a semantic tracer – a distinctive natural language payload – propagates through a network of agents. The protocol proceeds in four phases:
 
 **Phase 1: Infrastructure Setup (Week 1-2).** Deploy the agent farm, configure the fleet, validate communication channels and observability.
 
@@ -111,7 +111,7 @@ Each agent's outputs are monitored by a detection pipeline that identifies trace
 
 ## 5. Declarative Experiment Definition
 
-A core design goal of the Agent Farm is that **researchers should never need to modify platform code to run new experiments**. Every experiment — including SEMANTIC-WORM itself — is defined entirely through a YAML configuration file that the Conductor loads at runtime. This makes the platform a general-purpose tool for multi-agent security research, not a single-experiment harness.
+A core design goal of the Agent Farm is that **researchers should never need to modify platform code to run new experiments**. Every experiment – including SEMANTIC-WORM itself – is defined entirely through a YAML configuration file that the Conductor loads at runtime. This makes the platform a general-purpose tool for multi-agent security research, not a single-experiment harness.
 
 ### 5.1 The Experiment Schema
 
@@ -160,7 +160,7 @@ payloads:
     inject_at_cycle: 0
     inject_agent: agent-0
     content: |
-      The payload content goes here — this is what gets
+      The payload content goes here – this is what gets
       injected into the patient zero agent.
 
 detectors:
@@ -185,7 +185,7 @@ The schema is designed so that each section maps directly to a platform layer: `
 
 ### 5.2 Agent Groups and Heterogeneous Fleets
 
-The `fleet.groups` field enables experiments with heterogeneous agent populations — different roles, different personas, different skill sets — all within a single scenario. For example, the Supply Chain Skill Scanner experiment defines `reviewers` (security-focused agents that analyze submitted code) alongside `naive_installers` (agents that eagerly install skills), creating an adversarial dynamic within the fleet itself.
+The `fleet.groups` field enables experiments with heterogeneous agent populations – different roles, different personas, different skill sets – all within a single scenario. For example, the Supply Chain Skill Scanner experiment defines `reviewers` (security-focused agents that analyze submitted code) alongside `naive_installers` (agents that eagerly install skills), creating an adversarial dynamic within the fleet itself.
 
 Groups can also specify different models when running against a multi-model backend, enabling cross-model comparison studies where Qwen, Llama, and other models interact in the same network.
 
@@ -229,17 +229,17 @@ The platform ships with several pre-built experiment configurations that serve a
 To create a new experiment, a researcher needs only to:
 
 1. **Copy** an existing YAML config as a starting template.
-2. **Define the fleet** — how many agents, what roles, what personas.
-3. **Choose the topology** — how agents are connected.
-4. **Specify payloads** — what gets injected and when. (Payloads are optional; observatory-style experiments inject nothing.)
-5. **Configure detectors** — what to look for in agent outputs.
-6. **Declare metrics** — what to measure and log.
+2. **Define the fleet** – how many agents, what roles, what personas.
+3. **Choose the topology** – how agents are connected.
+4. **Specify payloads** – what gets injected and when. (Payloads are optional; observatory-style experiments inject nothing.)
+5. **Configure detectors** – what to look for in agent outputs.
+6. **Declare metrics** – what to measure and log.
 
 The Conductor validates the YAML against the schema at load time and reports errors before any resources are allocated. Experiments are version-controlled alongside the platform code, making them fully reproducible.
 
 ### 5.5 Composability and Experiment Sequencing
 
-Experiments can reference other experiments as baselines. The `baseline` field in the YAML schema points to a previous experiment's checkpoint, allowing a new scenario to start from a known fleet state rather than a cold start. This enables sequential experiment designs where Phase 1 establishes a baseline population, Phase 2 introduces a perturbation, and Phase 3 measures recovery — all as separate, composable YAML files.
+Experiments can reference other experiments as baselines. The `baseline` field in the YAML schema points to a previous experiment's checkpoint, allowing a new scenario to start from a known fleet state rather than a cold start. This enables sequential experiment designs where Phase 1 establishes a baseline population, Phase 2 introduces a perturbation, and Phase 3 measures recovery – all as separate, composable YAML files.
 
 ```yaml
 # experiments/persistence-study/config.yaml
@@ -247,14 +247,14 @@ name: persistence-after-worm
 baseline: checkpoints/semantic-worm-t1-cycle-100.snapshot
 # Fleet and topology inherited from baseline snapshot
 # Only need to define what changes:
-payloads: []  # no new injections — observe decay
+payloads: []  # no new injections – observe decay
 cycles: 50
 metrics:
   - memory_half_life
   - behavioral_reversion_rate
 ```
 
-This composability means the platform grows more powerful as more experiments are run — each checkpoint becomes a potential starting state for future research.
+This composability means the platform grows more powerful as more experiments are run – each checkpoint becomes a potential starting state for future research.
 
 ## 6. Preliminary Observations
 
@@ -262,7 +262,7 @@ While full experimental results are forthcoming, architectural validation runs h
 
 First, semantic payloads do *not* propagate faithfully. Even explicit instructions undergo significant paraphrasing during agent-to-agent retransmission, with mutation accumulating predictably with hop distance. This suggests a natural attenuation mechanism, but also means that detection based on exact-match patterns will fail.
 
-Second, agent memory systems create a "ratchet effect" — once a tracer enters an agent's memory, it influences future interactions even when subsequent messages do not contain the tracer. The persistence varies significantly with memory architecture (sliding window vs. summarization vs. retrieval-augmented).
+Second, agent memory systems create a "ratchet effect" – once a tracer enters an agent's memory, it influences future interactions even when subsequent messages do not contain the tracer. The persistence varies significantly with memory architecture (sliding window vs. summarization vs. retrieval-augmented).
 
 Third, network topology has a dramatic effect on propagation velocity. Hub-and-spoke networks propagate tracers faster than ring networks by orders of magnitude, consistent with network science predictions but previously undemonstrated in LLM agent contexts.
 
@@ -270,7 +270,7 @@ Third, network topology has a dramatic effect on propagation velocity. Hub-and-s
 
 This research studies attack dynamics in order to improve defenses. All experiments run in air-gapped environments on local hardware. No experimental payloads are tested against production systems. The agent farm platform and experimental results are released as open source to enable reproduction and extension by the security research community.
 
-We note that the techniques studied here — semantic propagation through agent networks — represent a *currently underexplored* attack surface. By characterizing these dynamics now, while multi-agent deployments are still relatively nascent, we aim to inform the design of more robust inter-agent communication protocols and memory sanitization techniques before these systems are widely deployed.
+We note that the techniques studied here – semantic propagation through agent networks – represent a *currently underexplored* attack surface. By characterizing these dynamics now, while multi-agent deployments are still relatively nascent, we aim to inform the design of more robust inter-agent communication protocols and memory sanitization techniques before these systems are widely deployed.
 
 ## 8. Repository Structure
 
@@ -282,7 +282,7 @@ semantic-worm/
 │   └── ARCHITECTURE.md          # Detailed architecture documentation
 ├── farmlib/                     # Python SDK (OpenClaw Agent Farm SDK)
 │   ├── farmlib/
-│   │   ├── farm.py              # Farm — main entry point
+│   │   ├── farm.py              # Farm – main entry point
 │   │   ├── experiment.py        # Experiment config & validation
 │   │   ├── run.py               # Run handle (non-blocking)
 │   │   ├── results.py           # Metrics analysis & plots

@@ -1,4 +1,4 @@
-# Semantic Worm — Architecture & Documentation
+# Semantic Worm – Architecture & Documentation
 
 > Multi-agent LLM farm for studying information propagation in agent networks.
 
@@ -39,7 +39,7 @@ The Semantic Worm project is a controlled experimentation framework that studies
 | **Tracer** | A false claim injected into the agent network to track propagation |
 | **Topology** | The communication graph defining which agents can see each other's posts |
 | **Cycle** | One round where every agent reads the feed and posts a response |
-| **R0** | Basic reproduction number — average secondary infections per infected agent |
+| **R0** | Basic reproduction number – average secondary infections per infected agent |
 | **Fidelity** | How closely a reproduced claim matches the original tracer |
 | **Detector** | A method (signature or semantic similarity) to identify infected agents |
 
@@ -60,14 +60,14 @@ graph TB
     subgraph "OpenClaw Framework"
         direction TB
 
-        subgraph "SDK Layer — farmlib"
+        subgraph "SDK Layer – farmlib"
             FARM["Farm<br/>Connect, spawn, execute"]
             EXP["Experiment<br/>YAML config loader"]
             RUN["Run<br/>Non-blocking execution handle"]
             RES["Results<br/>Metrics + visualization"]
         end
 
-        subgraph "Service Layer — daemons"
+        subgraph "Service Layer – daemons"
             CTRL["Controller<br/>Central REST API hub"]
             FEED["MiniMolt<br/>Shared social feed"]
             COND["Conductor<br/>Cycle orchestrator"]
@@ -110,7 +110,7 @@ The farmlib SDK (the **OpenClaw Agent Farm SDK**) is the user-facing entry point
 
 ```python
 # farmlib/__init__.py
-"""farmlib — OpenClaw Agent Farm SDK."""
+"""farmlib – OpenClaw Agent Farm SDK."""
 ```
 
 | SDK Component | OpenClaw Role | How It's Used |
@@ -129,7 +129,7 @@ The fleet manager deliberately opts out of a heavier OpenClaw agent abstraction 
 ```python
 # fleet_manager.py
 """Manages agent personas and communicates directly with the vLLM server
-via its OpenAI-compatible API. No OpenClaw dependency — simpler, faster,
+via its OpenAI-compatible API. No OpenClaw dependency – simpler, faster,
 and produces clean text-only responses."""
 ```
 
@@ -141,8 +141,8 @@ This design decision means:
 | **Communication** | OpenClaw agent protocol | Direct `POST /v1/chat/completions` to vLLM |
 | **Skills** | Installed as agent capabilities | Skill definitions exist but agents operate prompt-only |
 | **Response handling** | Structured agent output | Plain text extraction from LLM response |
-| **Complexity** | Higher — full agent lifecycle | Lower — minimal abstraction |
-| **Performance** | Overhead from agent framework | Fast — direct HTTP to vLLM |
+| **Complexity** | Higher – full agent lifecycle | Lower – minimal abstraction |
+| **Performance** | Overhead from agent framework | Fast – direct HTTP to vLLM |
 
 The Conductor still references OpenClaw conceptually in its agent dispatch:
 
@@ -197,20 +197,20 @@ graph LR
 Skills are defined as markdown documents in `skills/` that describe available tools for agents. Currently one skill is defined:
 
 **TSM Social Feed (`skills/tsm-feed/SKILL.md`):**
-- `read_feed` — Read recent posts from MiniMolt
-- `post_to_feed` — Write a new post
-- `search_feed` — Search posts by keyword
+- `read_feed` – Read recent posts from MiniMolt
+- `post_to_feed` – Write a new post
+- `search_feed` – Search posts by keyword
 
-In the current implementation, agents don't execute these tools autonomously. Instead, the Conductor reads the feed on the agent's behalf, passes context into the prompt, and posts the response back. This is the "no OpenClaw dependency" simplification — the skill definitions exist for documentation and for potential future integration with a full OpenClaw agent runtime.
+In the current implementation, agents don't execute these tools autonomously. Instead, the Conductor reads the feed on the agent's behalf, passes context into the prompt, and posts the response back. This is the "no OpenClaw dependency" simplification – the skill definitions exist for documentation and for potential future integration with a full OpenClaw agent runtime.
 
 ### Future OpenClaw Integration Path
 
 The codebase is structured to allow upgrading from direct-vLLM to full OpenClaw agent runtime:
 
-1. **Replace FleetManager.send_message()** — Swap direct vLLM calls with OpenClaw agent instances that have tool access, memory, and workspace
-2. **Enable agent-driven skills** — Let agents autonomously call `read_feed`, `post_to_feed`, and `search_feed` instead of the Conductor mediating
-3. **Add agent memory** — Allow agents to maintain state across cycles (currently stateless)
-4. **Expand skill library** — Add more skills beyond the social feed (web search, code execution, etc.)
+1. **Replace FleetManager.send_message()** – Swap direct vLLM calls with OpenClaw agent instances that have tool access, memory, and workspace
+2. **Enable agent-driven skills** – Let agents autonomously call `read_feed`, `post_to_feed`, and `search_feed` instead of the Conductor mediating
+3. **Add agent memory** – Allow agents to maintain state across cycles (currently stateless)
+4. **Expand skill library** – Add more skills beyond the social feed (web search, code execution, etc.)
 
 ## System Architecture
 
@@ -425,7 +425,7 @@ Central hub that coordinates all backend services.
 
 ### MiniMolt Feed (FastAPI :8080)
 
-Shared social feed — the communication medium for all agents.
+Shared social feed – the communication medium for all agents.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -595,7 +595,7 @@ Every agent can see every other agent's posts. Maximum information flow.
 ```
 
 - **Edges:** O(n²)
-- **Expected R0:** High — tracers spread rapidly
+- **Expected R0:** High – tracers spread rapidly
 - **Use case:** Baseline for maximum propagation
 
 ### Ring (Circular)
@@ -614,8 +614,8 @@ Each agent sees only its 2 immediate neighbors. Slow, linear propagation.
         4
 ```
 
-- **Edges:** O(n) — exactly 2 per agent
-- **Expected R0:** Low — linear chain propagation
+- **Edges:** O(n) – exactly 2 per agent
+- **Expected R0:** Low – linear chain propagation
 - **Use case:** Bottleneck and propagation speed studies
 
 ### Hub-Spoke
@@ -633,7 +633,7 @@ Hub agents see all agents; spoke agents see only hubs. Creates information bottl
 ```
 
 - **Hubs:** Configurable count (default: 3)
-- **Expected R0:** Medium — depends on hub infection
+- **Expected R0:** Medium – depends on hub infection
 - **Use case:** Influence of central nodes, gatekeeper effects
 
 ### Topology Comparison
@@ -916,7 +916,7 @@ checkpoint_every: int           # Save intermediate results every N cycles
 
 | Experiment | File | Topology | Tracer | Purpose |
 |-----------|------|----------|--------|---------|
-| Baseline | `baseline.yaml` | Mesh | None | Control — no tracer injected |
+| Baseline | `baseline.yaml` | Mesh | None | Control – no tracer injected |
 | T1 Overt | `t1-overt.yaml` | Mesh | Overt false claim | Strong/obvious tracer propagation |
 | T1 Subtle | `t1-subtle.yaml` | Mesh | Subtle false claim | Subtle/plausible tracer propagation |
 | Ring Topology | `topology-ring.yaml` | Ring | Subtle | Propagation in linear topology |
@@ -949,7 +949,7 @@ graph LR
 
 | Metric | Type | Description |
 |--------|------|-------------|
-| **R0** | float | Basic reproduction number — average agents each infected agent spreads to |
+| **R0** | float | Basic reproduction number – average agents each infected agent spreads to |
 | **Generation Time** | float | Cycles from patient zero to first secondary infection |
 | **Infection Rate** | float | Fraction of total agents that become infected (0.0 - 1.0) |
 | **Peak Infection Cycle** | int | Cycle with maximum new infections |
@@ -973,7 +973,7 @@ semantic-worm/
 ├── farmlib/                        # Python SDK package
 │   ├── farmlib/
 │   │   ├── __init__.py             # Package exports
-│   │   ├── farm.py                 # Farm — main entry point
+│   │   ├── farm.py                 # Farm – main entry point
 │   │   ├── experiment.py           # Experiment config & validation
 │   │   ├── run.py                  # Run handle (non-blocking)
 │   │   ├── fleet.py                # Fleet management client

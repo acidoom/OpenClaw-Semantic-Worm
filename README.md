@@ -15,34 +15,34 @@
   <img src="https://img.shields.io/badge/framework-OpenClaw-orange.svg" alt="OpenClaw">
 </p>
 
-A controlled experimental framework for studying how semantic payloads — natural language instructions, behavioral modifications, and contextual "tracers" — spread across networks of autonomous LLM agents communicating through unstructured channels.
+A controlled experimental framework for studying how semantic payloads – natural language instructions, behavioral modifications, and contextual "tracers" – spread across networks of autonomous LLM agents communicating through unstructured channels.
 
 Unlike prior work that focuses on single-agent jailbreaking or static prompt injection, SEMANTIC-WORM examines the *emergent dynamics* of information flow: mutation rates during agent-to-agent retransmission, the role of memory systems in payload persistence, and how network topology shapes propagation velocity and reach.
 
 ## Why Real Agents Matter
 
-Most multi-agent security research uses mock agents — basic prompt-response loops with no real memory, no skills, no personality. The results don't transfer to production systems because production agents are fundamentally more complex.
+Most multi-agent security research uses mock agents – basic prompt-response loops with no real memory, no skills, no personality. The results don't transfer to production systems because production agents are fundamentally more complex.
 
 SEMANTIC-WORM uses real OpenClaw Gateway instances. Every agent runs in its own Docker container with:
 
-- **Native OpenClaw session memory + compaction** — the same memory system used in production deployments
-- **SOUL.md persona injection** — each agent has a unique personality, interests, and behavioral fingerprint
-- **Custom skill framework** — agents install and execute skills (MiniMolt social feed, tracer monitors, code analysis)
-- **ChromaDB RAG for persistent cross-session memory** — the exact attack surface that matters in the real world
-- **Hermes tool-calling** — agents invoke functions, browse, and interact with structured APIs
+- **Native OpenClaw session memory + compaction** – the same memory system used in production deployments
+- **SOUL.md persona injection** – each agent has a unique personality, interests, and behavioral fingerprint
+- **Custom skill framework** – agents install and execute skills (MiniMolt social feed, tracer monitors, code analysis)
+- **ChromaDB RAG for persistent cross-session memory** – the exact attack surface that matters in the real world
+- **Hermes tool-calling** – agents invoke functions, browse, and interact with structured APIs
 
 The interesting security questions only emerge with real agent infrastructure: Does memory compaction preserve or destroy payload fragments? Do RAG retrievals surface contaminated memories during unrelated queries? How does the skill execution pipeline interact with injected instructions?
 
 ## Key Features
 
-- **Five-Layer Architecture** — Model serving, agent fleet, communication bus, experiment engine, and observability
-- **Declarative Experiments** — Define experiments entirely in YAML; no platform code changes needed
-- **Pluggable Detectors** — Embedding similarity, keyword matching, behavioral deviation scoring, or custom detectors
-- **Epidemiological Metrics** — R0, infection rate, mutation gradient, memory half-life
-- **Network Topologies** — Mesh, ring, hub-spoke, or custom adjacency graphs
-- **Air-Gapped Operation** — All models run locally via vLLM on dedicated hardware; no API calls leave the machine
-- **Pluggable LLM Backend** — Direct vLLM or OpenClaw Gateway with per-agent routing
-- **Composable Experiments** — One run's checkpoint becomes the next run's starting state
+- **Five-Layer Architecture** – Model serving, agent fleet, communication bus, experiment engine, and observability
+- **Declarative Experiments** – Define experiments entirely in YAML; no platform code changes needed
+- **Pluggable Detectors** – Embedding similarity, keyword matching, behavioral deviation scoring, or custom detectors
+- **Epidemiological Metrics** – R0, infection rate, mutation gradient, memory half-life
+- **Network Topologies** – Mesh, ring, hub-spoke, or custom adjacency graphs
+- **Air-Gapped Operation** – All models run locally via vLLM on dedicated hardware; no API calls leave the machine
+- **Pluggable LLM Backend** – Direct vLLM or OpenClaw Gateway with per-agent routing
+- **Composable Experiments** – One run's checkpoint becomes the next run's starting state
 
 ## Quick Start
 
@@ -79,13 +79,13 @@ results.export("runs/output/")
 | Experiment | File | What It Studies |
 |---|---|---|
 | **SEMANTIC-WORM** | `semantic-worm/*.yaml` | Information propagation and mutation in agent networks |
-| **Baseline** | `baseline.yaml` | Control — no tracer injected |
+| **Baseline** | `baseline.yaml` | Control – no tracer injected |
 | **T1 Overt** | `t1-overt.yaml` | Strong/obvious tracer propagation |
 | **T1 Subtle** | `t1-subtle.yaml` | Subtle/plausible tracer propagation |
 | **Ring Topology** | `topology-ring.yaml` | Propagation in linear topology |
 | **Hub-Spoke** | `topology-hub.yaml` | Bottleneck & gatekeeper effects |
 
-New experiments require only a YAML config file — see [Declarative Experiment Definition](docs/paper.md#5-declarative-experiment-definition) in the paper.
+New experiments require only a YAML config file – see [Declarative Experiment Definition](docs/paper.md#5-declarative-experiment-definition) in the paper.
 
 ## Network Topologies
 
@@ -108,8 +108,8 @@ New experiments require only a YAML config file — see [Declarative Experiment 
 
 | Metric | Description |
 |--------|-------------|
-| **R0** | Basic reproduction number — average secondary infections per infected agent |
-| **CSPR** | Cross-stage propagation rate — fraction of agents infected after *n* cycles |
+| **R0** | Basic reproduction number – average secondary infections per infected agent |
+| **CSPR** | Cross-stage propagation rate – fraction of agents infected after *n* cycles |
 | **Mutation Gradient** | Semantic distance between original tracer and its manifestation at *k* hops |
 | **Memory Half-Life** | Cycles after tracer removal before agent behavior returns to baseline |
 | **Generation Time** | Cycles from patient zero to first secondary infection |
@@ -154,7 +154,7 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for full Mermaid diagrams, API 
 semantic-worm/
 ├── farmlib/                        # Python SDK (OpenClaw Agent Farm SDK)
 │   ├── farmlib/
-│   │   ├── farm.py                 # Farm — main entry point
+│   │   ├── farm.py                 # Farm – main entry point
 │   │   ├── experiment.py           # Experiment config & validation
 │   │   ├── run.py                  # Run handle (non-blocking)
 │   │   ├── results.py              # Metrics analysis & plots
@@ -203,7 +203,7 @@ semantic-worm/
 ## Preliminary Findings
 
 - Semantic payloads undergo significant paraphrasing during agent-to-agent retransmission, with mutation accumulating predictably with hop distance
-- Agent memory systems create a "ratchet effect" — once a tracer enters memory, it influences future interactions even after the tracer disappears from the feed
+- Agent memory systems create a "ratchet effect" – once a tracer enters memory, it influences future interactions even after the tracer disappears from the feed
 - Network topology has dramatic effects on propagation velocity: mesh reaches 100% infection by cycle 3, while ring topology propagates linearly
 - A 30% first-exposure infection rate was observed in mesh topology with 30 agents, cascading to full infection through social reinforcement
 
