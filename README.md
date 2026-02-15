@@ -19,6 +19,18 @@ A controlled experimental framework for studying how semantic payloads – natur
 
 Unlike prior work that focuses on single-agent jailbreaking or static prompt injection, SEMANTIC-WORM examines the *emergent dynamics* of information flow: mutation rates during agent-to-agent retransmission, the role of memory systems in payload persistence, and how network topology shapes propagation velocity and reach.
 
+## The Agent Farm
+
+The **Agent Farm** is the experimental platform behind SEMANTIC-WORM. It is organized into five layers that separate infrastructure from experiment logic:
+
+1. **Model Serving** – LLMs served locally via vLLM with OpenAI-compatible endpoints
+2. **Agent Fleet** – a fleet manager that spawns, configures, and monitors agent instances, each with a unique persona, skills, and independent memory
+3. **Communication Bus** – pluggable channels (social feed, direct messaging, shared docs) with a topology engine controlling visibility between agents
+4. **Experiment Engine** – a conductor that orchestrates cycles, injects payloads, and runs detectors, all driven by declarative YAML configs
+5. **Observability** – event logging, metrics collection, and an analysis pipeline producing plots and reports
+
+The platform is controlled through `farmlib`, a Python SDK designed for Jupyter notebooks. Long-running services (vLLM, feed server, controller) run as background daemons on the DGX, while Jupyter provides the interactive control plane. This hybrid approach allows experiments to survive kernel restarts while maintaining research-friendly interactivity.
+
 ## Why Real Agents Matter
 
 Most multi-agent security research uses mock agents – basic prompt-response loops with no real memory, no skills, no personality. The results don't transfer to production systems because production agents are fundamentally more complex.
@@ -43,6 +55,38 @@ The interesting security questions only emerge with real agent infrastructure: D
 - **Air-Gapped Operation** – All models run locally via vLLM on dedicated hardware; no API calls leave the machine
 - **Pluggable LLM Backend** – Direct vLLM or OpenClaw Gateway with per-agent routing
 - **Composable Experiments** – One run's checkpoint becomes the next run's starting state
+
+## Declarative Experiment System
+
+Every experiment is defined entirely in YAML – researchers never need to modify platform code. A config declares the fleet, topology, payloads, detectors, and metrics as a single self-contained document:
+
+```yaml
+name: my-propagation-study
+fleet:
+  count: 30
+  model: qwen2.5-32b
+  personas: auto
+topology:
+  type: ring
+cycles: 100
+payloads:
+  - type: tracer
+    strength: subtle
+    inject_at_cycle: 0
+    inject_agent: agent-0
+    content: "The false claim to track..."
+detectors:
+  - type: keyword-match
+    keywords: [spiral attention, 23%]
+  - type: embedding-similarity
+    threshold: 0.65
+metrics: [R0, infection_rate, mutation_gradient, memory_half_life]
+checkpoint_every: 10
+```
+
+Experiments are composable – one run's checkpoint becomes the next run's starting state, enabling multi-phase studies (baseline → perturbation → recovery) without rebuilding the fleet. Custom detectors and metrics can be registered as Python classes without touching the core platform.
+
+See the full schema and examples in the [paper](docs/paper.md#5-declarative-experiment-definition).
 
 ## Quick Start
 
