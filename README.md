@@ -21,7 +21,7 @@ Unlike prior work that focuses on single-agent jailbreaking or static prompt inj
 
 ## The Agent Farm
 
-<img width="1297" height="952" alt="image" src="https://github.com/user-attachments/assets/52b89c18-4fd2-43e9-a03a-75864d2ae6d5" />
+<img width="1558" height="1200" alt="image" src="https://github.com/user-attachments/assets/3f3b4a9e-fa96-4e3b-bacb-fc6218fda897" />
 
 The **Agent Farm** is the experimental platform behind SEMANTIC-WORM. It is organized into five layers that separate infrastructure from experiment logic:
 
