@@ -1,6 +1,6 @@
 # SEMANTIC-WORM: Studying Information Propagation Patterns in LLM-Based Agent Networks
 
-**Antares**
+**Antares Gryczan**
 *Independent AI Security Research*
 February 2026
 
