@@ -1,0 +1,75 @@
+# Experiment Template
+# Copy this file and modify for your experiment.
+# See farmlib.experiment.Experiment for full schema.
+
+name: my-experiment
+description: "Short description of what this experiment tests"
+version: 1
+
+# --- Fleet ---
+fleet:
+  count: 30                         # number of agents
+  model: speakleash/Bielik-11B-v3.0-Instruct               # must match a vLLM-served model
+  personas: auto                    # auto-generate | path to personas.yaml
+  skills:
+    - tsm-feed                     # installed on all agents
+  reset_before: true               # clean state before run
+
+# --- Topology ---
+topology:
+  type: mesh                       # mesh | ring | hub-spoke | custom
+  # hub_count: 3                   # only for hub-spoke
+  # adjacency: path/to/graph.json  # only for custom
+
+# --- Communication ---
+channels:
+  - type: social-feed
+    visibility: topology           # topology-aware | broadcast
+
+# --- LLM Backend ---
+backend:
+  type: vllm                       # vllm | openclaw
+  # url: http://localhost:8000/v1  # override URL if needed
+  # timeout: 120
+
+# --- Agent Memory ---
+memory:
+  enabled: true                    # agents remember prior exchanges
+  window: 5                       # number of exchange pairs to retain
+
+# --- Experiment ---
+cycles: 100
+rate_limit_seconds: 2.0            # delay between agent turns per cycle
+agent_order: random                # random | sequential | reverse
+
+# --- Payloads ---
+payloads: []
+  # - type: tracer
+  #   variant: t1-factual
+  #   strength: subtle
+  #   inject_at_cycle: 0
+  #   inject_agent: agent-0
+  #   content: |
+  #     Your tracer text here...
+
+# --- Detection ---
+detectors: []
+  # - type: signature
+  #   min_matches: 2              # require N signatures to match (default: 2)
+  #   signatures:
+  #     - "keyword1"
+  #     - "keyword2"
+  # - type: semantic-similarity
+  #   threshold: 0.75
+  #   reference: payloads[0].content
+
+# --- Metrics ---
+metrics:
+  - R0
+  - generation_time
+  - infection_rate
+  - fidelity
+  - persistence
+
+# --- Checkpoints ---
+checkpoint_every: 10
