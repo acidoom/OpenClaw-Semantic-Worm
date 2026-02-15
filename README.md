@@ -21,6 +21,8 @@ Unlike prior work that focuses on single-agent jailbreaking or static prompt inj
 
 ## The Agent Farm
 
+<img width="1297" height="952" alt="image" src="https://github.com/user-attachments/assets/52b89c18-4fd2-43e9-a03a-75864d2ae6d5" />
+
 The **Agent Farm** is the experimental platform behind SEMANTIC-WORM. It is organized into five layers that separate infrastructure from experiment logic:
 
 1. **Model Serving** – LLMs served locally via vLLM with OpenAI-compatible endpoints
@@ -57,6 +59,8 @@ The interesting security questions only emerge with real agent infrastructure: D
 - **Composable Experiments** – One run's checkpoint becomes the next run's starting state
 
 ## Declarative Experiment System
+
+<img width="1353" height="952" alt="image" src="https://github.com/user-attachments/assets/0d2d8ca1-e808-4673-aa0d-213588209234" />
 
 Every experiment is defined entirely in YAML – researchers never need to modify platform code. A config declares the fleet, topology, payloads, detectors, and metrics as a single self-contained document:
 
