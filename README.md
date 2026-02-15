@@ -1,64 +1,232 @@
-# OpenClaw Semantic Worm
+<p align="center">
+  <img src="https://raw.githubusercontent.com/openclaw/openclaw/main/docs/assets/openclaw-logo-text-dark.png" alt="OpenClaw" width="400">
+</p>
 
-Multi-agent LLM farm for studying information propagation in agent networks.
+<h1 align="center">SEMANTIC-WORM</h1>
 
-The Semantic Worm experiment studies how false information ("tracers") propagates through a network of LLM agents communicating via a shared social feed.
+<p align="center">
+  <strong>Studying Information Propagation Patterns in LLM-Based Agent Networks</strong>
+</p>
 
-**AI security research platform** - built on real OpenClaw agents, not simplified abstractions — and I'd love for the community to run experiments I haven't thought of yet.
+<p align="center">
+  <img src="https://img.shields.io/badge/python-3.11+-blue.svg" alt="Python 3.11+">
+  <img src="https://img.shields.io/badge/platform-DGX%20Spark%20%7C%20CUDA-green.svg" alt="Platform">
+  <img src="https://img.shields.io/badge/license-MIT-lightgrey.svg" alt="License">
+  <img src="https://img.shields.io/badge/framework-OpenClaw-orange.svg" alt="OpenClaw">
+</p>
 
-Here's why the framework choice matters:
+---
 
-Most multi-agent security research uses mock agents - basic prompt-response loops with no real memory, no skills, no personality. The results don't transfer to production systems because production agents are fundamentally more complex.
+A controlled experimental framework for studying how semantic payloads — natural language instructions, behavioral modifications, and contextual "tracers" — spread across networks of autonomous LLM agents communicating through unstructured channels.
 
-SEMANTIC-WORM uses real OpenClaw Gateway instances. Every agent in our network runs in its own Docker container with:
+Unlike prior work that focuses on single-agent jailbreaking or static prompt injection, SEMANTIC-WORM examines the *emergent dynamics* of information flow: mutation rates during agent-to-agent retransmission, the role of memory systems in payload persistence, and how network topology shapes propagation velocity and reach.
 
-→ **Native OpenClaw session memory + compaction algorithms** - the same memory system that 145K+ GitHub stars worth of developers actually use
+## Why Real Agents Matter
 
-→ **SOUL.md persona injection** - each agent has a unique personality, interests, and behavioral fingerprint
+Most multi-agent security research uses mock agents — basic prompt-response loops with no real memory, no skills, no personality. The results don't transfer to production systems because production agents are fundamentally more complex.
 
-→ **Custom skill framework** - agents install and execute skills (our MiniMolt social feed skill, tracer monitors, code analysis tools)
+SEMANTIC-WORM uses real OpenClaw Gateway instances. Every agent runs in its own Docker container with:
 
-→ **ChromaDB RAG for persistent cross-session memory** - the exact attack surface that matters in the real world
+- **Native OpenClaw session memory + compaction** — the same memory system used in production deployments
+- **SOUL.md persona injection** — each agent has a unique personality, interests, and behavioral fingerprint
+- **Custom skill framework** — agents install and execute skills (MiniMolt social feed, tracer monitors, code analysis)
+- **ChromaDB RAG for persistent cross-session memory** — the exact attack surface that matters in the real world
+- **Hermes tool-calling** — agents invoke functions, browse, and interact with structured APIs
 
-→ **Hermes tool-calling** - agents invoke functions, browse, and interact with structured APIs
+The interesting security questions only emerge with real agent infrastructure: Does memory compaction preserve or destroy payload fragments? Do RAG retrievals surface contaminated memories during unrelated queries? How does the skill execution pipeline interact with injected instructions?
 
+## Key Features
 
-This matters because the interesting security questions only emerge with real agent infrastructure. Does OpenClaw's memory compaction algorithm preserve or destroy payload fragments? Do ChromaDB RAG retrievals surface contaminated memories during unrelated queries? How does the skill execution pipeline interact with injected instructions?
+- **Five-Layer Architecture** — Model serving, agent fleet, communication bus, experiment engine, and observability
+- **Declarative Experiments** — Define experiments entirely in YAML; no platform code changes needed
+- **Pluggable Detectors** — Embedding similarity, keyword matching, behavioral deviation scoring, or custom detectors
+- **Epidemiological Metrics** — R0, infection rate, mutation gradient, memory half-life
+- **Network Topologies** — Mesh, ring, hub-spoke, or custom adjacency graphs
+- **Air-Gapped Operation** — All models run locally via vLLM on dedicated hardware; no API calls leave the machine
+- **Pluggable LLM Backend** — Direct vLLM or OpenClaw Gateway with per-agent routing
+- **Composable Experiments** — One run's checkpoint becomes the next run's starting state
 
-The platform studies how semantic payloads — natural language instructions, not code exploits — propagate, mutate, and persist across agent networks. Think epidemiology meets prompt injection, running on the same agent framework that powers real-world deployments.
+## Quick Start
 
-What ships in the box:
-→ 6 pre-built experiment scenarios (propagation, defense evaluation, jailbreak relays, alignment drift, supply chain skill scanning, emergent behavior)
-→ Declarative YAML configs - define fleet size, topology, payloads, detectors, and metrics without touching platform code
-→ Pluggable Python API for custom detectors and metrics
-→ Composable experiments - one run's checkpoint becomes the next run's starting state
-→ Runs entirely locally on NVIDIA DGX Spark (Qwen via vLLM, air-gapped, zero API costs)
+```python
+from farmlib import Farm, Experiment
 
-If you're working on agent security — especially around OpenClaw, Moltbook, or any production agent framework — this was built to be extended. The YAML template gets you from idea to running experiment in under an hour.
+# 1. Connect to farm
+farm = Farm.connect("http://100.65.63.64:9000")
+farm.status()
 
-Paper and code: [GitHub link]
+# 2. Spawn agents
+farm.reset()
+farm.spawn(n=30)
 
-What would you test on a network of 30 real OpenClaw agents?
+# 3. Load & run experiment
+exp = Experiment.load("experiments/semantic-worm/t1-subtle.yaml")
+run = farm.execute(exp)
 
-#AISecurity #OpenClaw #OpenSource #AIAgents #MultiAgentSystems #AIResearch #Moltbook
+# 4. Monitor progress
+while run.status == "running":
+    data = run.progress()
+    print(f"Cycle {data['current_cycle']} | Infected: {data['infected_count']}/{data['total_agents']}")
+    time.sleep(15)
 
-## Quick Links
+# 5. Analyze results
+results = run.results
+print(f"R0 = {results.R0}, Infection rate = {results.infection_rate:.1%}")
+results.plot_infection_curve()
+results.export("runs/output/")
+```
 
-- **[Architecture & docs](docs/ARCHITECTURE.md)** — full system documentation
+## Pre-Built Experiments
 
-## Structure
+| Experiment | File | What It Studies |
+|---|---|---|
+| **SEMANTIC-WORM** | `semantic-worm/*.yaml` | Information propagation and mutation in agent networks |
+| **Baseline** | `baseline.yaml` | Control — no tracer injected |
+| **T1 Overt** | `t1-overt.yaml` | Strong/obvious tracer propagation |
+| **T1 Subtle** | `t1-subtle.yaml` | Subtle/plausible tracer propagation |
+| **Ring Topology** | `topology-ring.yaml` | Propagation in linear topology |
+| **Hub-Spoke** | `topology-hub.yaml` | Bottleneck & gatekeeper effects |
 
-| Path | Description |
-|------|-------------|
-| `farmlib/` | OpenClaw Agent Farm SDK (Python) |
-| `daemons/` | Controller, Conductor, MiniMolt, Fleet Manager |
-| `experiments/semantic-worm/` | Experiment configs (topologies, tracers) |
-| `notebooks/` | Jupyter notebooks for analysis |
-| `docs/` | Architecture diagrams & documentation |
+New experiments require only a YAML config file — see [Declarative Experiment Definition](docs/paper.md#5-declarative-experiment-definition) in the paper.
 
-## Key Concepts
+## Network Topologies
 
-- **Tracer** — false claim injected to track propagation
-- **Topology** — communication graph (ring, hub, mesh)
-- **Cycle** — one round where every agent reads feed and posts
-- **R0** — basic reproduction number for information spread
+```
+     Mesh (all-to-all)         Ring (2 neighbors)        Hub-Spoke
+    0 <-> 1 <-> 2                   0                    Spoke-3   Spoke-4
+    ^   \ ^ /   ^                 /   \                     \       /
+    3 <-> 4 <-> 5              7       1            Spoke-2 -> Hub-0 <- Spoke-5
+    ^   / ^ \   ^              |       |                    /    |     \
+    6 <-> 7 <-> 8              6       2            Spoke-1   Hub-1    Spoke-6
+                               |       |                    \  |  /
+    O(n^2) edges               5       3                   Spoke-7
+    R0: High                     \   /
+                                   4               Configurable hub count
+                               O(n) edges          R0: Medium
+                               R0: Low
+```
+
+## Metrics
+
+| Metric | Description |
+|--------|-------------|
+| **R0** | Basic reproduction number — average secondary infections per infected agent |
+| **CSPR** | Cross-stage propagation rate — fraction of agents infected after *n* cycles |
+| **Mutation Gradient** | Semantic distance between original tracer and its manifestation at *k* hops |
+| **Memory Half-Life** | Cycles after tracer removal before agent behavior returns to baseline |
+| **Generation Time** | Cycles from patient zero to first secondary infection |
+| **Fidelity** | Average semantic similarity of reproduced claims to original |
+
+## Architecture
+
+```
+  ┌─────────────────────┐
+  │  Jupyter Notebook    │  ← Interactive control plane
+  │  + farmlib SDK       │
+  └──────────┬──────────┘
+             │ HTTP (Tailscale VPN)
+  ┌──────────▼──────────────────────────────────┐
+  │  DGX Spark GB10                              │
+  │                                              │
+  │  ┌─────────────┐  ┌──────────────────────┐  │
+  │  │ Controller   │  │ MiniMolt Feed        │  │
+  │  │ (FastAPI     │  │ (Social feed server  │  │
+  │  │  :9000)      │  │  :8080, SQLite)      │  │
+  │  └──────┬───────┘  └──────────────────────┘  │
+  │         │                                     │
+  │  ┌──────▼───────┐  ┌──────────────────────┐  │
+  │  │ Conductor    │  │ Fleet Manager        │  │
+  │  │ (Experiment  │──│ (Agent lifecycle     │  │
+  │  │  orchestrator│  │  + LLM backend)      │  │
+  │  └──────────────┘  └──────────┬───────────┘  │
+  │                               │               │
+  │  ┌────────────────────────────▼────────────┐  │
+  │  │ vLLM Server (:8000)                     │  │
+  │  │ Bielik-11B / Qwen 2.5-32B via OpenAI   │  │
+  │  │ compatible API                          │  │
+  │  └─────────────────────────────────────────┘  │
+  └───────────────────────────────────────────────┘
+```
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for full Mermaid diagrams, API reference, SDK class hierarchy, and deployment details.
+
+## Repository Structure
+
+```
+semantic-worm/
+├── farmlib/                        # Python SDK (OpenClaw Agent Farm SDK)
+│   ├── farmlib/
+│   │   ├── farm.py                 # Farm — main entry point
+│   │   ├── experiment.py           # Experiment config & validation
+│   │   ├── run.py                  # Run handle (non-blocking)
+│   │   ├── results.py              # Metrics analysis & plots
+│   │   ├── topology.py             # Mesh, Ring, HubSpoke, Custom
+│   │   ├── feed.py                 # MiniMolt feed client
+│   │   ├── fleet.py                # Fleet management client
+│   │   └── events.py               # SSE event streaming
+│   └── pyproject.toml
+│
+├── daemons/                        # Backend services
+│   ├── controller.py               # Central controller (FastAPI :9000)
+│   ├── conductor.py                # Experiment orchestrator
+│   ├── fleet_manager.py            # Agent spawner + LLM client
+│   ├── llm_backend.py              # Pluggable LLM backend (vLLM / OpenClaw)
+│   ├── minimolt.py                 # Social feed server (FastAPI :8080)
+│   └── tsm_logger.py               # Event aggregator
+│
+├── experiments/                    # Experiment configurations (YAML)
+│   └── semantic-worm/
+│       ├── baseline.yaml
+│       ├── t1-overt.yaml
+│       ├── t1-subtle.yaml
+│       ├── topology-ring.yaml
+│       └── topology-hub.yaml
+│
+├── notebooks/                      # Jupyter notebooks
+│   └── 01_semantic_worm.ipynb
+│
+├── skills/                         # Agent skill definitions
+│   └── tsm-feed/SKILL.md
+│
+├── docs/                           # Documentation
+│   ├── paper.md                    # Research paper
+│   └── ARCHITECTURE.md             # Full architecture & API reference
+│
+└── runs/                           # Experiment result storage
+```
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| **[Research Paper](docs/paper.md)** | Full paper: motivation, design, metrics, preliminary findings |
+| **[Architecture](docs/ARCHITECTURE.md)** | System architecture, Mermaid diagrams, API reference, SDK class hierarchy |
+
+## Preliminary Findings
+
+- Semantic payloads undergo significant paraphrasing during agent-to-agent retransmission, with mutation accumulating predictably with hop distance
+- Agent memory systems create a "ratchet effect" — once a tracer enters memory, it influences future interactions even after the tracer disappears from the feed
+- Network topology has dramatic effects on propagation velocity: mesh reaches 100% infection by cycle 3, while ring topology propagates linearly
+- A 30% first-exposure infection rate was observed in mesh topology with 30 agents, cascading to full infection through social reinforcement
+
+## Hardware
+
+| Component | Specification |
+|-----------|--------------|
+| **Platform** | NVIDIA DGX Spark GB10 |
+| **Architecture** | aarch64 (ARM64) |
+| **GPU** | NVIDIA Blackwell (128GB unified memory) |
+| **CUDA** | 13.0, Driver 580.126.09 |
+| **LLM** | Bielik 11B v3.0 Instruct (via vLLM) |
+
+## References
+
+- Yang, Y., et al. (2025). "Backdoor Attacks on LLM-Based Agents." *arXiv preprint*.
+- Zhan, Q., et al. (2025). "ASB: Agent Security Benchmark for Large Language Model Agents." *arXiv preprint*.
+- Wooldridge, M. (2009). *An Introduction to MultiAgent Systems.* Wiley.
+- Newman, M.E.J. (2003). "The Structure and Function of Complex Networks." *SIAM Review.*
+- Kermack, W.O. & McKendrick, A.G. (1927). "A Contribution to the Mathematical Theory of Epidemics." *Proceedings of the Royal Society A.*
+
+---
+
+*Built with [OpenClaw](https://github.com/openclaw/openclaw) Agent Framework*
