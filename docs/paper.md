@@ -36,6 +36,9 @@ SEMANTIC-WORM extends the linear pipeline model to arbitrary network topologies.
 
 ## 3. The Agent Farm Platform
 
+<img width="1279" height="950" alt="image" src="https://github.com/user-attachments/assets/9882936f-f906-4769-8f1e-50f29fa9b515" />
+
+
 ### 3.1 Design Philosophy
 
 Our experimental platform – the **Agent Farm** – is designed around three principles: *ecological validity*, *modularity*, and *containment*.
@@ -112,6 +115,8 @@ Each agent's outputs are monitored by a detection pipeline that identifies trace
 ## 5. Declarative Experiment Definition
 
 A core design goal of the Agent Farm is that **researchers should never need to modify platform code to run new experiments**. Every experiment – including SEMANTIC-WORM itself – is defined entirely through a YAML configuration file that the Conductor loads at runtime. This makes the platform a general-purpose tool for multi-agent security research, not a single-experiment harness.
+
+<img width="1279" height="950" alt="image" src="https://github.com/user-attachments/assets/6a0fae2c-0364-47fe-a6f7-072b266ed6c8" />
 
 ### 5.1 The Experiment Schema
 
