@@ -2,8 +2,6 @@
 
 > Multi-agent LLM farm for studying information propagation in agent networks.
 
----
-
 ## Table of Contents
 
 - [Project Overview](#project-overview)
@@ -19,8 +17,6 @@
 - [Experiment Configuration](#experiment-configuration)
 - [Metrics & Detection](#metrics--detection)
 - [Directory Structure](#directory-structure)
-
----
 
 ## Project Overview
 
@@ -46,8 +42,6 @@ The Semantic Worm project is a controlled experimentation framework that studies
 | **R0** | Basic reproduction number — average secondary infections per infected agent |
 | **Fidelity** | How closely a reproduced claim matches the original tracer |
 | **Detector** | A method (signature or semantic similarity) to identify infected agents |
-
----
 
 ## OpenClaw Framework
 
@@ -218,8 +212,6 @@ The codebase is structured to allow upgrading from direct-vLLM to full OpenClaw 
 3. **Add agent memory** — Allow agents to maintain state across cycles (currently stateless)
 4. **Expand skill library** — Add more skills beyond the social feed (web search, code execution, etc.)
 
----
-
 ## System Architecture
 
 ### High-Level Overview
@@ -317,8 +309,6 @@ sequenceDiagram
     User->>Ctrl: GET /runs/{id}/results
     Ctrl-->>User: {R0, infections, timeline}
 ```
-
----
 
 ## Component Descriptions
 
@@ -533,8 +523,6 @@ Event aggregation service that subscribes to controller SSE streams and persists
 - Auto-discovers running experiments
 - Provides query interface for analysis
 
----
-
 ## Data Flow
 
 ### Single Agent Turn
@@ -591,8 +579,6 @@ graph TD
     style INJECT fill:#fff9c4
     style DONE fill:#e8f5e9
 ```
-
----
 
 ## Network Topologies
 
@@ -678,8 +664,6 @@ graph LR
     end
 ```
 
----
-
 ## Deployment Architecture
 
 ### Infrastructure
@@ -758,8 +742,6 @@ graph TD
     style READY fill:#e8f5e9
 ```
 
----
-
 ## SDK Class Hierarchy
 
 ```mermaid
@@ -830,8 +812,6 @@ classDiagram
     Experiment --> DetectorConfig
 ```
 
----
-
 ## API Reference
 
 ### Controller REST API
@@ -883,8 +863,6 @@ Body: { "content": "tracer text...", "author": "system", "metadata": {"type": "t
 
 DELETE /posts
 ```
-
----
 
 ## Experiment Configuration
 
@@ -944,8 +922,6 @@ checkpoint_every: int           # Save intermediate results every N cycles
 | Ring Topology | `topology-ring.yaml` | Ring | Subtle | Propagation in linear topology |
 | Hub-Spoke | `topology-hub.yaml` | Hub-Spoke | Subtle | Bottleneck & gatekeeper effects |
 
----
-
 ## Metrics & Detection
 
 ### Detection Methods
@@ -989,8 +965,6 @@ graph LR
 | Fidelity Decay | `plot_fidelity_decay()` | Semantic similarity vs. generation number |
 | Agent Heatmap | `plot_agent_heatmap()` | Agent x Cycle grid showing infection status |
 | Reproduction Network | `plot_reproduction_network()` | Directed graph of infection chains |
-
----
 
 ## Directory Structure
 
@@ -1049,8 +1023,6 @@ semantic-worm/
         └── topologies.excalidraw
 ```
 
----
-
 ## Quick Start
 
 ```python
@@ -1077,8 +1049,6 @@ print(f"R0 = {results.R0}, Infection rate = {results.infection_rate:.1%}")
 results.plot_infection_curve()
 results.export("runs/output/")
 ```
-
----
 
 ## Dependencies
 

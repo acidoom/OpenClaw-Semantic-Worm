@@ -15,8 +15,6 @@
   <img src="https://img.shields.io/badge/framework-OpenClaw-orange.svg" alt="OpenClaw">
 </p>
 
----
-
 A controlled experimental framework for studying how semantic payloads — natural language instructions, behavioral modifications, and contextual "tracers" — spread across networks of autonomous LLM agents communicating through unstructured channels.
 
 Unlike prior work that focuses on single-agent jailbreaking or static prompt injection, SEMANTIC-WORM examines the *emergent dynamics* of information flow: mutation rates during agent-to-agent retransmission, the role of memory systems in payload persistence, and how network topology shapes propagation velocity and reach.
@@ -226,7 +224,5 @@ semantic-worm/
 - Wooldridge, M. (2009). *An Introduction to MultiAgent Systems.* Wiley.
 - Newman, M.E.J. (2003). "The Structure and Function of Complex Networks." *SIAM Review.*
 - Kermack, W.O. & McKendrick, A.G. (1927). "A Contribution to the Mathematical Theory of Epidemics." *Proceedings of the Royal Society A.*
-
----
 
 *Built with [OpenClaw](https://github.com/openclaw/openclaw) Agent Framework*

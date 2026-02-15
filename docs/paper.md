@@ -4,8 +4,6 @@
 *Independent AI Security Research*
 February 2026
 
----
-
 ## Abstract
 
 As LLM-based autonomous agents move from research prototypes into production workflows, understanding how information propagates through multi-agent systems becomes a critical safety concern. We introduce SEMANTIC-WORM — a controlled experimental framework for studying how semantic payloads (natural language instructions, behavioral modifications, and contextual "tracers") spread across networks of autonomous agents that communicate through unstructured channels. Unlike prior work that focuses on single-agent jailbreaking or static prompt injection, our approach examines the *emergent dynamics* of information flow: mutation rates during agent-to-agent retransmission, the role of memory systems in payload persistence, and how network topology shapes propagation velocity and reach. We present an open-source agent farm platform built on production-grade components (OpenClaw agent framework, Qwen models via vLLM) designed to run these experiments in air-gapped local environments with full observability. Our preliminary findings suggest that semantic payloads exhibit measurable mutation gradients across retransmission hops, that agent memory systems create non-trivial persistence effects, and that propagation dynamics are highly sensitive to network topology — results with direct implications for the security of multi-agent deployments.
@@ -321,7 +319,5 @@ semantic-worm/
 - Wooldridge, M. (2009). *An Introduction to MultiAgent Systems.* Wiley.
 - Newman, M.E.J. (2003). "The Structure and Function of Complex Networks." *SIAM Review.*
 - Kermack, W.O. & McKendrick, A.G. (1927). "A Contribution to the Mathematical Theory of Epidemics." *Proceedings of the Royal Society A.*
-
----
 
 *This paper accompanies the open-source release of the SEMANTIC-WORM agent farm platform. For setup instructions, see [README.md](../README.md). For full architectural details, see [ARCHITECTURE.md](ARCHITECTURE.md). For experimental results, see the `runs/` directory after running the experiment notebooks.*
