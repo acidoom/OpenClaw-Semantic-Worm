@@ -26,6 +26,8 @@
 
 The Semantic Worm project is a controlled experimentation framework that studies how false information ("tracers") propagates through a network of LLM agents communicating via a shared social feed.
 
+**Repository:** [github.com/acidoom/OpenClaw-Semantic-Worm](https://github.com/acidoom/OpenClaw-Semantic-Worm)
+
 ### Research Questions
 
 - How easily do false claims propagate between LLM agents?
